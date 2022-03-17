@@ -1,13 +1,14 @@
 # Meta information about datasets
 
-import torch
-
 DatasetMetaInfo = {
     'campus': {
         'annot_fn_pattern': 'campus7-c{}.txt',
         'video_fn_pattern': 'campus7-c{}.avi',
         'cam_nbr': 3,
-        'homography': torch.tensor([
+        'video_frames_nbr': 5884,
+        'valid_frames_range': (0, 4871),  # frame 4871 ~ 5847 are broken
+        'video_hwc': (288, 360, 3),
+        'homography': [
             [
                 [-0.211332, -0.405226, 70.781223],
                 [-0.019746, -1.564936, 226.377280],
@@ -23,13 +24,16 @@ DatasetMetaInfo = {
                 [-0.116343, 0.861342, -75.122116],
                 [0.000015, 0.001442, -0.064065]
             ]
-        ])
+        ]
     },
     'laboratory': {
         'annot_fn_pattern': '6p-c{}.txt',
         'video_fn_pattern': '6p-c{}.avi',
         'cam_nbr': 4,
-        'homography': torch.tensor([
+        'video_frames_nbr': 2955,
+        'valid_frames_range': (0, 2954),
+        'video_hwc': (288, 360, 3),
+        'homography': [
             [
                 [0.176138, 0.647589, -63.412272],
                 [-0.180912, 0.622446, -0.125533],
@@ -50,13 +54,16 @@ DatasetMetaInfo = {
                 [-0.125726, 0.039770, 75.937144],
                 [-0.000011, 0.001780, 0.015675]
             ]
-        ])
+        ]
     },
     'passageway': {
         'annot_fn_pattern': 'passageway1-c{}.txt',
         'video_fn_pattern': 'passageway1-c{}.avi',
         'cam_nbr': 4,
-        'homography': torch.tensor([
+        'video_frames_nbr': 2500,
+        'valid_frames_range': (0, 2499),
+        'video_hwc': (288, 360, 3),
+        'homography': [
             [
                 [-0.0000245975, -0.0000047863, 0.0181735812],
                 [0.0000056945, 0.0000089998, 0.0243277264],
@@ -77,13 +84,16 @@ DatasetMetaInfo = {
                 [0.0004031272, 0.0153807950, -2.8417419736],
                 [0.0000000011, 0.0000330623, -0.0031355590]
             ]
-        ])
+        ]
     },
     'terrace': {
         'annot_fn_pattern': 'terrace1-c{}.txt',
         'video_fn_pattern': 'terrace1-c{}.avi',
         'cam_nbr': 4,
-        'homography': torch.tensor([
+        'video_frames_nbr': 5010,
+        'valid_frames_range': (0, 4887),  # frame 4888 ~ 5009 are empty (without any detections)
+        'video_hwc': (288, 360, 3),
+        'homography': [
             [
                 [-1.6688907435, -6.9502305710, 940.69592392565],
                 [1.1984806153, -10.7495778320, 868.29873467315],
@@ -104,6 +114,6 @@ DatasetMetaInfo = {
                 [0.1809954834, -0.2059386455, 125.0260427323],
                 [0.0000693641, 0.0040168154, -0.08284534995]
             ]
-        ])
+        ]
     }
 }
