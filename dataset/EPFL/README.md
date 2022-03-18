@@ -1,11 +1,15 @@
-# Dataset
+# EPFL Dataset
 Link:
-- [Videos and Camera Calibration files (EPFL)](https://www.epfl.ch/labs/cvlab/data/data-pom-index-php/)
-- [Annotations (EPFL)](https://bitbucket.org/merayxu/multiview-object-tracking-dataset/src/master/EPFL/)
+- [Videos and Camera Calibration files](https://www.epfl.ch/labs/cvlab/data/data-pom-index-php/)
+- [Annotations](https://bitbucket.org/merayxu/multiview-object-tracking-dataset/src/master/EPFL/)
 
 Download videos and annotations from the link above, and organize it:
 ```txt
-data/dataset/
+data/dataset/EPFL/
+    basketball/
+        - match5-c*.avi
+        - match5-c*.txt
+        - calibration-campus.txt
     campus/
         - campus7-c*.avi
         - campus7-c*.txt
@@ -22,4 +26,9 @@ data/dataset/
         - terrace1-c*.avi
         - terrace1-c*.txt
         - calibration-terrace.txt
+    
+    (other files)
 ```
+
+Note:
+- Run `EPFL/preprocess.py` before training. After that, `frames` dir will be generated in each dataset folder.

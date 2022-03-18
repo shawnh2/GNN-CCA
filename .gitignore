@@ -1,7 +1,9 @@
 .idea
-/data/dataset/basketball
-/data/dataset/campus
-/data/dataset/laboratory/
-/data/dataset/passageway
-/data/dataset/terrace/
-/ckpt/
+
+/dataset/EPFL/basketball
+/dataset/EPFL/campus
+/dataset/EPFL/laboratory
+/dataset/EPFL/passageway
+/dataset/EPFL/terrace
+
+/ckpt
