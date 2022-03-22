@@ -1,6 +1,6 @@
-# Meta information about datasets
+# Dataset Meta Information
 
-DatasetMetaInfo = {
+EPFL = {
     'basketball': {
         'annot_fn_pattern': 'match5-c{}.txt',
         'video_fn_pattern': 'match5-c{}.avi',

@@ -5,7 +5,7 @@ Link:
 
 Download videos and annotations from the link above, and organize it:
 ```txt
-data/dataset/EPFL/
+dataset/EPFL/
     basketball/
         - match5-c*.avi
         - match5-c*.txt
@@ -26,9 +26,4 @@ data/dataset/EPFL/
         - terrace1-c*.avi
         - terrace1-c*.txt
         - calibration-terrace.txt
-    
-    (other files)
 ```
-
-Note:
-- Run `EPFL/preprocess.py` before training. After that, `frames` dir will be generated in each dataset folder.

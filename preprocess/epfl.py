@@ -3,19 +3,19 @@ import os
 import cv2
 import tqdm
 
-from epfl_seq import EPFLSequence
-from dataset_meta_info import DatasetMetaInfo as DMI
+from sequence import EPFLSequence
+from meta_info import EPFL
 
 
-def save_frame_to_disk():
+def preprocess_epfl():
     # Save video frames to local disk.
-    for dataset_nm, dataset_info in DMI.items():
-        dataset_dir = f'./{dataset_nm}'
+    for dataset_nm, dataset_info in EPFL.items():
+        dataset_dir = f'./dataset/EPFL/{dataset_nm}'
         outputs_dir = os.path.join(dataset_dir, 'frames')
         if not os.path.exists(outputs_dir):
             os.mkdir(outputs_dir)
 
-        seq = EPFLSequence(dataset_dir, DMI[dataset_nm])
+        seq = EPFLSequence(dataset_dir, EPFL[dataset_nm])
         avail_frames = sorted(seq.avail_frames())
         cur_avail_frame = 0
         caps = [cv2.VideoCapture(vp) for vp in seq.videos]
@@ -36,4 +36,4 @@ def save_frame_to_disk():
 
 
 if __name__ == '__main__':
-    save_frame_to_disk()
+    preprocess_epfl()
