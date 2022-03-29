@@ -29,7 +29,7 @@ def preprocess_epfl():
             for i, cap in enumerate(caps):
                 ret, img = cap.read()
                 if ret:
-                    cv2.imwrite(os.path.join(outputs_dir, f'{frame_id}_{i}.jpg'), img)
+                    cv2.imwrite(os.path.join(outputs_dir, f'{frame_id}_{i}.png'), img)
                 else:
                     raise ValueError(f'Cannot load frame {frame_id} from video {dataset_nm} at cam {i}.')
             cur_avail_frame += 1

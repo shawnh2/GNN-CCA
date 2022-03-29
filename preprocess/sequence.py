@@ -59,7 +59,7 @@ class EPFLSequence(Sequence):
         self.videos = [osp.join(dataset_path, dataset_meta_info['video_fn_pattern'].format(c))
                        for c in range(self.cam_nbr)]
         self.shape = dataset_meta_info['video_hwc']
-        self.img_nm = dataset_path + '/frames/{}_{}.jpg'
+        self.img_nm = dataset_path + '/frames/{}_{}.png'
 
         self.H = torch.tensor(dataset_meta_info['homography'])
         super(EPFLSequence, self).__init__()
@@ -82,5 +82,5 @@ class EPFLSequence(Sequence):
                 )
             fp.close()
 
-    def get_frame_images(self, frame_id):
+    def get_frame_images(self, frame_id: int):
         return [self.img_nm.format(frame_id, camera_id) for camera_id in range(self.cam_nbr)]
