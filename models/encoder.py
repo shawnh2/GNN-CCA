@@ -20,6 +20,8 @@ class NodeFeatureEncoder(nn.Module):
 class EdgeFeatureEncoder(nn.Module):
     def __init__(self, device, ckpt=None):
         super(EdgeFeatureEncoder, self).__init__()
+        # Learnable edge feature encoder, original design:
+        # => Linear(4, 6) + ReLU()
         self.layer = nn.Sequential(
             nn.Linear(4, 8),
             nn.ReLU(),
