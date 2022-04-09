@@ -1,4 +1,5 @@
 import csv
+import random
 import os.path as osp
 
 import torch
@@ -23,19 +24,21 @@ class Sequence:
         - get_frame_images(self, frame_id): return the image file path list at a certain frame.
     """
 
-    def __init__(self):
+    def __init__(self, val_ratio: float):
         self._frames = {}  # only store the available frames
         self._load()
+
+        self.avail_frames = list(self._frames.keys())
+        random.shuffle(self.avail_frames)
+        val_nbr = int(len(self.avail_frames) * val_ratio)
+        self.train_frames = self.avail_frames[:-val_nbr]
+        self.val_frames = self.avail_frames[-val_nbr:]
 
     def _load(self):
         raise NotImplementedError()
 
     def get_frame_images(self, frame_id):
         raise NotImplementedError()
-
-    def avail_frames(self) -> list:
-        """Return all the available frame id in this sequence."""
-        return list(self._frames.keys())
 
     def __getitem__(self, frame_id: int):
         return self._frames.get(frame_id)
@@ -47,11 +50,14 @@ class Sequence:
 class EPFLSequence(Sequence):
     """
     Load EPFL dataset meta information into Sequence.
-    Its annotations row format:
-    (track_id, x_min, y_min, x_max, y_max, frame_number, lost, occluded, generated, label).
+
+    Within annotations format:
+        (track_id, x_min, y_min, x_max, y_max, frame_number, lost, occluded, generated, label)
     """
 
-    def __init__(self, dataset_path: str, dataset_meta_info: dict):
+    def __init__(self, dataset_path: str, dataset_meta_info: dict, val_ratio=0.3):
+        assert 0 <= val_ratio < 1
+
         self.frames_range = dataset_meta_info['valid_frames_range']
         self.cam_nbr = dataset_meta_info['cam_nbr']
         self.annots = [osp.join(dataset_path, dataset_meta_info['annot_fn_pattern'].format(c))
@@ -62,7 +68,7 @@ class EPFLSequence(Sequence):
         self.img_nm = dataset_path + '/frames/{}_{}.png'
 
         self.H = torch.tensor(dataset_meta_info['homography'])
-        super(EPFLSequence, self).__init__()
+        super(EPFLSequence, self).__init__(val_ratio)
 
     def _load(self):
         for cam_id, annotation in enumerate(self.annots):

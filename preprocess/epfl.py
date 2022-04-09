@@ -16,7 +16,7 @@ def preprocess_epfl():
             os.mkdir(outputs_dir)
 
         seq = EPFLSequence(dataset_dir, EPFL[dataset_nm])
-        avail_frames = sorted(seq.avail_frames())
+        avail_frames = sorted(seq.avail_frames)
         cur_avail_frame = 0
         caps = [cv2.VideoCapture(vp) for vp in seq.videos]
         for frame_id in tqdm.trange(seq.frames_range[0], seq.frames_range[1] + 1, desc=dataset_nm):
