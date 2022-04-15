@@ -6,5 +6,10 @@
 /dataset/EPFL/passageway
 /dataset/EPFL/terrace
 
+/dataset/CAMPUS/Auditorium
+/dataset/CAMPUS/Garden1
+/dataset/CAMPUS/Garden2
+/dataset/CAMPUS/Parkinglot
+
 /ckpt
 /output
