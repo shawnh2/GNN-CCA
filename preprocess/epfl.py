@@ -1,39 +1,54 @@
 import os
+import csv
+import json
+import random
 
-import cv2
-import tqdm
-
-from sequence import EPFLSequence
-from meta_info import EPFL
+from base import Preprocess
 
 
-def preprocess_epfl():
-    # Save video frames to local disk.
-    for dataset_nm, dataset_info in EPFL.items():
-        dataset_dir = f'./dataset/EPFL/{dataset_nm}'
-        outputs_dir = os.path.join(dataset_dir, 'frames')
-        if not os.path.exists(outputs_dir):
-            os.mkdir(outputs_dir)
+random.seed(202204)
 
-        seq = EPFLSequence(dataset_dir, EPFL[dataset_nm])
-        avail_frames = sorted(seq.avail_frames)
-        cur_avail_frame = 0
-        caps = [cv2.VideoCapture(vp) for vp in seq.videos]
-        for frame_id in tqdm.trange(seq.frames_range[0], seq.frames_range[1] + 1, desc=dataset_nm):
-            # Skip the invalid frame.
-            if frame_id != avail_frames[cur_avail_frame]:
-                for cap in caps:
-                    cap.read()
-                continue
-            # Capture one frame across all cameras.
-            for i, cap in enumerate(caps):
-                ret, img = cap.read()
-                if ret:
-                    cv2.imwrite(os.path.join(outputs_dir, f'{frame_id}_{i}.png'), img)
-                else:
-                    raise ValueError(f'Cannot load frame {frame_id} from video {dataset_nm} at cam {i}.')
-            cur_avail_frame += 1
+
+class EPFLPreprocess(Preprocess):
+
+    def load_annotations(self):
+        for cam_id, annot_name in enumerate(self.annots_name):
+            fp = open(os.path.join(self.dataset_path, annot_name))
+            rd = csv.reader(fp, delimiter=' ')
+            # Within annotations format:
+            # (track_id, x_min, y_min, x_max, y_max, frame_number, lost, occluded, generated, label)
+            for row in rd:
+                # Filter out the lost one.
+                if row[6] == '1':
+                    continue
+                track_id, x_min, y_min, x_max, y_max, frame_id = tuple(map(int, row[:6]))
+                # Filter out the frame that outside the valid frames range.
+                if frame_id > self.valid_frames_range[1] or \
+                   frame_id < self.valid_frames_range[0]:
+                    continue
+                self.frames.setdefault(frame_id, []).append(
+                    (x_min, y_min, x_max - x_min, y_max - y_min, track_id, cam_id)
+                )
+            fp.close()
+
+
+def preprocess_epfl(dataset_dir):
+    with open(os.path.join(dataset_dir, 'metainfo.json'), 'r') as fp:
+        meta_info = json.load(fp)
+
+    for dataset_name in meta_info.keys():
+        dmi = meta_info[dataset_name]
+        epfl = EPFLPreprocess(
+            dataset_name,
+            dataset_dir,
+            [dmi['annot_fn_pattern'].format(cam_id) for cam_id in range(dmi['cam_nbr'])],
+            [dmi['video_fn_pattern'].format(cam_id) for cam_id in range(dmi['cam_nbr'])],
+            dmi['eval_ratio'],
+            dmi['test_ratio'],
+            dmi['valid_frames_range']
+        )
+        epfl.process()
 
 
 if __name__ == '__main__':
-    preprocess_epfl()
+    preprocess_epfl("./dataset/EPFL")
