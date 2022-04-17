@@ -79,7 +79,7 @@ class BaseGraphDataset(Dataset):
                     v.append(n2)
                     # True edges: if two tracks have the same identity.
                     lbls.append(1 if dst_tid == src_tid else 0)
-            x, y, w, h = frames[n1, 0:4]
+            x, y, w, h = frames[n1, :4]
             # Obtain camera projection by projecting the foot point of bounding box.
             proj = torch.matmul(self._H[sid][src_cid],
                                 torch.tensor([x + w / 2, y + h, 1], dtype=torch.float32))
@@ -92,7 +92,8 @@ class BaseGraphDataset(Dataset):
             bdets[n1] = det
 
         graph = dgl.graph((u + v, v + u), idtype=torch.int32, device=self.device)  # undirected graph
-        graph.ndata['cam'] = frames[:, -1].to(self.device)
+        graph.ndata['cam'] = frames[:, -1].to(self.device)  # for validation purpose
+        graph.ndata['box'] = frames[:, :4].to(self.device)  # for visualization purpose
         y_true = torch.tensor(lbls + lbls, dtype=torch.float32, device=self.device).unsqueeze(1)  # (E, 1)
         # Obtain the initial node appearance feature.
         node_feature = self.feature_extractor(bdets)  # (N, 512)
@@ -112,6 +113,9 @@ class EPFLDataset(BaseGraphDataset):
     def load_dataset(self):
         with open(osp.join(self.dataset_dir, 'metainfo.json')) as fp:
             meta_info = json.load(fp)
+
+        if len(self.seq_names) == 1 and self.seq_names[0] == 'all':
+            self.seq_names = list(meta_info.keys())
 
         SFI = []
         for seq_id, name in enumerate(self.seq_names):
