@@ -1,3 +1,2 @@
-from .encoder import NodeFeatureEncoder, EdgeFeatureEncoder
-from .predictor import MLPPredictor
+from .mlp import NodeFeatureEncoder, EdgeFeatureEncoder, EdgePredictor
 from .mpn import MPN
