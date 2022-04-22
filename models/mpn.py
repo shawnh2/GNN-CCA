@@ -9,18 +9,18 @@ class MPN(nn.Module):
 
     def __init__(self, device, ckpt=None):
         super(MPN, self).__init__()
-        # Learnable MLP encoders, original design:
-        # => Linear(38, 32) + ReLU()
+        # Learnable MLP message encoders
         self.node_msg_encoder = nn.Sequential(
             nn.Linear(38, 64),
             nn.ReLU(),
-            nn.Linear(64, 32)
+            nn.Linear(64, 32),
+            nn.ReLU()
         )
-        # => Linear(70, 6) + ReLU()
         self.edge_msg_encoder = nn.Sequential(
             nn.Linear(70, 32),
             nn.ReLU(),
             nn.Linear(32, 6),
+            nn.ReLU()
         )
         self.to(device)
         if ckpt is not None:
