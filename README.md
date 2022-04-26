@@ -3,6 +3,8 @@ This is a DGL implementation of [GNN-CCA](https://arxiv.org/abs/2201.06311) for 
 
 The original GNN-CCA was implemented in [PyGeometric](https://github.com/pyg-team/pytorch_geometric). This repo re-implements in [DGL](https://github.com/dmlc/dgl). Both are using PyTorch.
 
+![cover](doc/seq_3_frame_2001.jpg)
+
 ## Installation
 1. Install PyTorch (>= 1.9.0) and [DGL](https://www.dgl.ai/pages/start.html)
 2. Install other requirements:
@@ -16,7 +18,7 @@ pip install -r requirements.txt
 Assume `DATA_NAME` is the directory in `dataset` folder.
 
 1. Download dataset. Please refer to `dataset/${DATA_NAME}/README.md`
-2. Run `python preprocess/${DATA_NAME}.py` with `%{DATA_NAME}` be the lower case. For example:
+2. Run `python preprocess/${DATA_NAME}.py` with `${DATA_NAME}` be the lower case. For example:
 ```
 python preprocess/epfl.py
 ```
@@ -29,21 +31,31 @@ Training model on a specific dataset.
 
 For example, training on EPFL dataset with all sequences:
 ```bash
-python train.py --device cuda --reid-path ${PATH_TO_REID_MODEL} --epfl --seq-name all
+python run.py --train --reid-path ${PATH_TO_REID_MODEL} --epfl --seq-name all
 ```
 training on EPFL dataset with specific sequences:
 ```bash
-python train.py --device cuda --reid-path ${PATH_TO_REID_MODEL} --epfl --seq-name campus terrace passageway
+python run.py --train --reid-path ${PATH_TO_REID_MODEL} --epfl --seq-name campus terrace passageway
 ```
 You can also change the ReID model (served as the feature extractor) refer to [here](https://kaiyangzhou.github.io/deep-person-reid/MODEL_ZOO.html), and assume its name is `NAME_OF_REID_MODEL`.
 Then you can train your model by running:
 ```bash
-python train.py --reid-name ${NAME_OF_REID_MODEL} --reid-path ${PATH_TO_REID_MODEL} ...
+python run.py --reid-name ${NAME_OF_REID_MODEL} --reid-path ${PATH_TO_REID_MODEL} ...
 ```
+After each epoch, the trained model will be saved in the directory assigned by `--output`.
 
 ## Testing
+Testing model on a specific dataset.
 
-## Demo
+For example, testing on EPFL dataset with all sequences:
+```bash
+python run.py --test --reid-path ${PATH_TO_REID_MODEL} --ckpt ${PATH_TO_MODEL} --epfl --seq-name all
+```
+and you can also plot the results by adding `--visualize`:
+```bash
+python run.py --test --reid-path ${PATH_TO_REID_MODEL} --ckpt ${PATH_TO_MODEL} --epfl --seq-name all --visualize
+```
+The results will be saved in the directory assigned by `--output`.
 
 ## Citation
 ```
