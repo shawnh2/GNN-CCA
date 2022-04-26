@@ -34,36 +34,6 @@
     "eval_ratio": 0.2,
     "test_ratio": 0.3
   },
-  "campus": {
-    "name": "campus",
-    "annot_fn_pattern": "campus7-c{}.txt",
-    "video_fn_pattern": "campus7-c{}.avi",
-    "cam_nbr": 3,
-    "video_frames_nbr": 5884,
-    "valid_frames_range": [0, 4870],
-    "frame_width": 360,
-    "frame_height": 288,
-    "homography": [
-      [
-        [-0.211332, -0.405226, 70.781223],
-        [-0.019746, -1.564936, 226.377280],
-        [-0.000025, -0.001961, 0.160791]
-      ],
-      [
-        [0.000745, 0.350335, -98.376103],
-        [-0.164871, -0.390422, 54.081423],
-        [0.000021, -0.001668, 0.111075]
-      ],
-      [
-        [0.089976, 1.066795, -152.055667],
-        [-0.116343, 0.861342, -75.122116],
-        [0.000015, 0.001442, -0.064065]
-      ]
-    ],
-    "train_ratio": 0.7,
-    "eval_ratio": 0.2,
-    "test_ratio": 0.3
-  },
   "laboratory": {
     "name": "laboratory",
     "annot_fn_pattern": "6p-c{}.txt",

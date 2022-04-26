@@ -1,12 +1,8 @@
 import os
 import csv
 import json
-import random
 
 from base import Preprocess
-
-
-random.seed(202204)
 
 
 class EPFLPreprocess(Preprocess):

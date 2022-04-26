@@ -10,10 +10,6 @@ dataset/EPFL/
         - match5-c*.avi
         - match5-c*.txt
         - calibration-campus.txt
-    campus/
-        - campus7-c*.avi
-        - campus7-c*.txt
-        - calibration-campus.txt
     laboratory/
         - 6p-c*.avi
         - 6p-c*.txt
@@ -27,3 +23,6 @@ dataset/EPFL/
         - terrace1-c*.txt
         - calibration-terrace.txt
 ```
+
+Note: 
+- sequence `campus` is not used because it has a lot generated bounding boxes in annotation files.

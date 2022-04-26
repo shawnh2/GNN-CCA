@@ -15,8 +15,9 @@ class Preprocess:
                  videos_name: list,
                  eval_ratio: float,
                  test_ratio: float,
-                 valid_frames_range: tuple,
-                 image_format='jpg'):
+                 valid_frames_range=None,
+                 image_format='jpg',
+                 random_seed=202204):
         self.dataset_name = dataset_name
         self.dataset_path = os.path.join(base_dir, dataset_name)
         self.annots_name = annots_name  # must correspond to cameras id
@@ -28,6 +29,8 @@ class Preprocess:
         self.output_path = os.path.join(self.dataset_path, 'output')
         self.frames_output_path = os.path.join(self.output_path, 'frames')
         self.frames = {}
+
+        random.seed(random_seed)
 
     def process(self):
         if not os.path.exists(self.output_path):
@@ -55,9 +58,9 @@ class Preprocess:
             cams = set([sample[-1] for sample in frame])
             if len(cams) <= 1:
                 invalid_frames_id.append(frame_id)
-        if len(invalid_frames_id) != 0:
-            for frame_id in invalid_frames_id:
-                self.frames.pop(frame_id)
+
+        for frame_id in invalid_frames_id:
+            self.frames.pop(frame_id)
 
     def select_frames(self, frames_id: list):
         ret = {}
@@ -71,7 +74,7 @@ class Preprocess:
                 for vn in self.videos_name]
         avail_frames = sorted(frames_id)
         cur_frame_id = 0
-        for frame_id in tqdm.trange(avail_frames[0], avail_frames[-1] + 1, desc=self.dataset_name):
+        for frame_id in tqdm.trange(0, avail_frames[-1] + 1, desc=self.dataset_name):
             # Skip the invalid frame.
             if frame_id != avail_frames[cur_frame_id]:
                 for cap in caps:
