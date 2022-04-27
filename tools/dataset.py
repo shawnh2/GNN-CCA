@@ -4,7 +4,7 @@ import os.path as osp
 import cv2
 import dgl
 import torch
-from torchvision import transforms
+from torchvision import transforms as T
 from torch.utils.data import Dataset
 
 
@@ -24,10 +24,10 @@ class BaseGraphDataset(Dataset):
         self.feature_extractor = feature_extractor
         self.dataset_dir = dataset_dir
 
-        self._transform = transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(0.3, 0.3, 0.3, 0.3),
-            transforms.RandomErasing()
+        self._transforms = T.Compose([
+            T.RandomHorizontalFlip(),
+            T.ColorJitter(0.3, 0.3, 0.3, 0.3),
+            T.RandomErasing()
         ])
         # ====== These values can be loaded via self.load_dataset() ======
         self._H = []  # homography matrices, H[seq_id][cam_id] => torch.Tensor(3*3)
@@ -36,22 +36,20 @@ class BaseGraphDataset(Dataset):
         self._SFI = None  # a (N*2) size tensor, store <seq_id, frame_id>
         self.load_dataset()
 
-    @staticmethod
-    def process_img(img):
-        """Convert a numpy.ndarray image to torch.Tensor image."""
-        res = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        res = torch.from_numpy(res)
-        res = torch.permute(res, (2, 0, 1))  # (H, W, C) => (C, H, W)
-        return res.float()
-
     def load_dataset(self):
         raise NotImplementedError
 
-    def load_images(self, seq_id: int, frame_id: int):
+    def load_images(self, seq_id: int, frame_id: int, tensor=True):
         imgs = []
         for img_path in self._P[seq_id]:
             img = cv2.imread(img_path.format(frame_id))
-            imgs.append(self.process_img(img))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            if tensor:
+                img = T.ToTensor()(img)  # (C, H, W), float
+            else:
+                img = torch.from_numpy(img)
+                img = torch.permute(img, (2, 0, 1))  # (C, H, W), uint8
+            imgs.append(img)
         return imgs
 
     def __len__(self):
@@ -86,14 +84,16 @@ class BaseGraphDataset(Dataset):
             projs[n1] = proj / proj[-1]
             # Obtain bounding box detections image.
             det = frame_images[int(src_cid)][:, y: y + h, x: x + w]
-            det = transforms.Resize((256, 128))(det)
+            det = T.Resize((256, 128))(det)
             if self.mode == 'train':
-                det = self._transform(det)
+                det = self._transforms(det)
             bdets[n1] = det
 
         graph = dgl.graph((u + v, v + u), idtype=torch.int32, device=self.device)  # undirected graph
         graph.ndata['cam'] = frames[:, -1].to(self.device)  # for validation purpose
         graph.ndata['box'] = frames[:, :4].to(self.device)  # for visualization purpose
+        other = {'seq_id': sid, 'frame_id': fid}
+
         y_true = torch.tensor(lbls + lbls, dtype=torch.float32, device=self.device).unsqueeze(1)  # (E, 1)
         # Obtain the initial node appearance feature.
         node_feature = self.feature_extractor(bdets)  # (N, 512)
@@ -105,7 +105,8 @@ class BaseGraphDataset(Dataset):
             torch.pairwise_distance(projs[u, :2], projs[v, :2], p=2).to(self.device)   # l2 distance
         )).T  # (E / 2, 4)
         edge_feature = torch.cat((embedding, embedding))  # (E, 4)
-        return graph, node_feature, edge_feature, y_true
+
+        return graph, node_feature, edge_feature, y_true, other
 
 
 class EPFLDataset(BaseGraphDataset):
