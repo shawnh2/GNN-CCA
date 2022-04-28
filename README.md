@@ -35,7 +35,7 @@ python run.py --train --reid-path ${PATH_TO_REID_MODEL} --epfl --seq-name all
 ```
 training on EPFL dataset with specific sequences:
 ```bash
-python run.py --train --reid-path ${PATH_TO_REID_MODEL} --epfl --seq-name campus terrace passageway
+python run.py --train --reid-path ${PATH_TO_REID_MODEL} --epfl --seq-name terrace passageway
 ```
 You can also change the ReID model (served as the feature extractor) refer to [here](https://kaiyangzhou.github.io/deep-person-reid/MODEL_ZOO.html), and assume its name is `NAME_OF_REID_MODEL`.
 Then you can train your model by running:
@@ -44,6 +44,8 @@ python run.py --reid-name ${NAME_OF_REID_MODEL} --reid-path ${PATH_TO_REID_MODEL
 ```
 After each epoch, the trained model will be saved in the directory assigned by `--output`.
 
+Finally, denote `PATH_TO_MODEL` as the trained model.
+
 ## Testing
 Testing model on a specific dataset.
 
@@ -51,9 +53,9 @@ For example, testing on EPFL dataset with all sequences:
 ```bash
 python run.py --test --reid-path ${PATH_TO_REID_MODEL} --ckpt ${PATH_TO_MODEL} --epfl --seq-name all
 ```
-and you can also plot the results by adding `--visualize`:
+and you can also plot the results of some sequences by adding `--visualize`:
 ```bash
-python run.py --test --reid-path ${PATH_TO_REID_MODEL} --ckpt ${PATH_TO_MODEL} --epfl --seq-name all --visualize
+python run.py --test --reid-path ${PATH_TO_REID_MODEL} --ckpt ${PATH_TO_MODEL} --epfl --seq-name terrace laboratory --visualize
 ```
 The results will be saved in the directory assigned by `--output`.
 
