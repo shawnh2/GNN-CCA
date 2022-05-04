@@ -6,7 +6,7 @@ The original GNN-CCA was implemented in [PyGeometric](https://github.com/pyg-tea
 ![cover](doc/seq_3_frame_2001.jpg)
 
 ## Installation
-1. Install PyTorch (>= 1.9.0) and [DGL](https://www.dgl.ai/pages/start.html)
+1. Install PyTorch (>= 1.9.0) and [DGL](https://www.dgl.ai/pages/start.html) (Python 3.7)
 2. Install other requirements:
 ``` 
 pip install -r requirements.txt
@@ -25,6 +25,21 @@ python preprocess/epfl.py
 
 ### Model
 1. Download ReID model from [here](https://drive.google.com/file/d/1nIrszJVYSHf3Ej8-j6DTFdWz8EnO42PB/view) and assume its path is `PATH_TO_REID_MODEL`.
+2. You can also download the trained model from table below and assume its path is `PATH_TO_MODEL`.
+
+| Model Name   | Download Link                                                                                                                                                                   | Train Dataset | Test Dataset | Performance |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|--------------|-------------|
+| gnn_cca_epfl | [Google Drive](https://drive.google.com/file/d/1gJs5pxpo6KAr6xhcRnM2EH2gL1hF7ztJ/view?usp=sharing) <br/> [Baidu Drive (m1he)](https://pan.baidu.com/s/1UoA7Hsc_G9NBRdtzjePPyg)  | EPFL          | EPFL         | See Table 1 |
+
+_Note: all the trainings are under the same default configuration._
+
+#### Table 1:
+| Test Sequence | ARI    | AMI    | H      | C      | V-m    | ACC    |
+|---------------|--------|--------|--------|--------|--------|--------|
+| basketball    | 72.998 | 58.406 | 52.270 | 66.799 | 58.476 | 97.035 |
+| laboratory    | 91.983 | 86.821 | 85.714 | 88.184 | 86.880 | 98.268 |
+| passageway    | 71.211 | 66.528 | 64.718 | 80.970 | 67.081 | 93.573 |
+| terrace       | 90.749 | 84.478 | 83.060 | 86.228 | 84.526 | 98.300 |
 
 ## Training
 Training model on a specific dataset.
@@ -58,6 +73,15 @@ and you can also plot the results of some sequences by adding `--visualize`:
 python run.py --test --reid-path ${PATH_TO_REID_MODEL} --ckpt ${PATH_TO_MODEL} --epfl --seq-name terrace laboratory --visualize
 ```
 The results will be saved in the directory assigned by `--output`.
+
+## Results
+Result of EPFL-basketball:
+
+![result1](doc/seq_1_frame_123.jpg)
+
+Result of EPFL-laboratory:
+
+![result2](doc/seq_2_frame_1929.jpg)
 
 ## Citation
 ```
