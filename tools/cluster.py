@@ -1,7 +1,8 @@
-import cv2
+import torch
 import numpy as np
 import networkx as nx
 from sklearn import metrics
+from torchvision.utils import draw_bounding_boxes, save_image
 
 from tools.utils import get_color
 
@@ -13,10 +14,10 @@ class ClusterDetections:
         self.targets = targets.squeeze(1).int().cpu()
         self.graph = graph
 
-        self._cam_info = graph.ndata['cam'].cpu().numpy()
-        self._box_info = graph.ndata['box'].cpu().numpy()
+        self._cam_info = graph.ndata['cam'].cpu()
+        self._box_info = graph.ndata['box'].cpu()
         self._act_edges = np.zeros(inputs.shape[0], dtype=np.int32)
-        self._n_cams = np.unique(self._cam_info).size
+        self._n_cams = torch.unique(self._cam_info).shape[0]
         self._n_node = graph.num_nodes()
         self._G = nx.Graph()  # draw graph from active edges
         self._G.add_nodes_from([n for n in range(self._n_node)])
@@ -89,28 +90,20 @@ class ClusterDetections:
                     # Deactivate the deleted edge.
                     self._act_edges[self.graph.edge_ids(u, v)] = 0
 
-    def visualize(self,
-                  images_path: list,
-                  output_path: str,
-                  line_thickness=2,
-                  font_thickness=1,
-                  font_scale=1.0):
-        gids = np.zeros(self._n_node, dtype=np.int32)  # global id
-        for gid, cc in enumerate(nx.connected_components(self._G)):
-            gids[list(cc)] = gid
+    def visualize(self, images: list, save_path):
+        global_labels = torch.zeros(self._n_node, dtype=torch.int32)
+        for i, cc in enumerate(nx.connected_components(self._G)):
+            global_labels[list(cc)] = i
 
-        imgs = []
-        nid = 0  # node id, also local id
-        for cam_id, img_path in enumerate(images_path):
-            boxes = self._box_info[self._cam_info == cam_id]
-            img = cv2.imread(img_path)
-            for box in boxes:
-                gid = int(gids[nid])
-                x, y, w, h = box
-                color = get_color(gid)
-                cv2.rectangle(img, (x, y), (x + w, y + h), color, line_thickness)
-                cv2.putText(img, str(gid), (x, y),
-                            cv2.FONT_HERSHEY_PLAIN, font_scale, color, font_thickness)
-                nid += 1
-            imgs.append(img)
-        cv2.imwrite(output_path, np.vstack(imgs))
+        # Convert (xmin, ymin, w, h) to (xmin, ymin, xmax, ymax)
+        self._box_info[:, -2:] += self._box_info[:, :2]
+
+        draws = []
+        for cam_id, img in enumerate(images):
+            mask = self._cam_info == cam_id
+            bboxes = self._box_info[mask]
+            labels = list(map(int, global_labels[mask]))
+            colors = [get_color(l) for l in labels]
+            draw = draw_bounding_boxes(img, bboxes, list(map(str, labels)), colors)
+            draws.append(draw / 255.0)
+        save_image(draws, save_path, nrow=2)

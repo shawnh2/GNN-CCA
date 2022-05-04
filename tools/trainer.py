@@ -93,6 +93,7 @@ class Trainer:
         test_loader = DataLoader(test_set, collate_fn=udf_collate_fn)
         scores = self._test_one_epoch(test_loader, ckpt['L'], visualize_dir)
         result = {metric: float(score) for metric, score in zip(self.metrics_name, scores)}
+        result['test-seq'] = test_set.seq_names
         with open(osp.join(output_dir, 'result.json'), 'w') as fp:
             json.dump(result, fp)
         logger.info(f"Test result has been saved in {output_dir} successfully")
