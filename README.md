@@ -7,9 +7,12 @@ The original GNN-CCA was implemented in [PyGeometric](https://github.com/pyg-tea
 
 ## Installation
 1. Install PyTorch (>= 1.9.0) and [DGL](https://www.dgl.ai/pages/start.html) (Python 3.7)
-2. Install other requirements:
+2. Install other requirements and [warmup_scheduler](https://github.com/ildoonet/pytorch-gradual-warmup-lr):
 ``` 
 pip install -r requirements.txt
+```
+```
+pip install git+https://github.com/ildoonet/pytorch-gradual-warmup-lr.git
 ```
 3. Install [torchreid](https://github.com/KaiyangZhou/deep-person-reid) (follow its instruction)
 
