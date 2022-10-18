@@ -1,0 +1,6 @@
+opencv-python
+tqdm
+numpy
+networkx
+sklearn
+loguru
